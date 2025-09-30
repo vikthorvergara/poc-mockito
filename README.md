@@ -32,10 +32,33 @@ That's it. Simple POC for learning purposes.
 
 ## Learning Path
 
-1. **Start with `MockitoTriangleTest`** - Complete examples of all three pillars
-2. **Understand the workflow**: Create → Stub → Test → Verify
-3. **Practice variations**: Different return types, exceptions, argument matching
-4. **Build complexity gradually**: Start simple, add edge cases
+### Level 1: Fundamentals
+**Start with `fundamentals/MockitoTriangleTest`**
+- Basic mock creation with `@Mock` and `mock()`
+- Simple stubbing: `when().thenReturn()`, `when().thenThrow()`
+- Basic verification: `verify()`
+- Understanding the Create → Stub → Verify workflow
+
+### Level 2: Intermediate Patterns
+**Move to `intermediate/IntermediateTriangleTest`**
+- Advanced mock creation with `@InjectMocks`
+- Consecutive call stubbing
+- Void method stubbing with `doThrow()` and `doNothing()`
+- Verification modes: `times()`, `never()`, `atLeast()`, `atMost()`
+- `ArgumentCaptor` for complex verification
+- Method call ordering with `inOrder()`
+- Argument matchers: `any()`, `eq()`, `argThat()`
+
+**Spring Boot Integration: `intermediate/SpringBootMockBeanTest`**
+- `@MockBean` for Spring context integration
+- Testing real service logic with mocked dependencies
+- Understanding when to use `@MockBean` vs `@Mock`
+
+### Level 3: Advanced (Coming Soon)
+- Spies and partial mocks
+- Static method mocking
+- Custom argument matchers
+- thenAnswer() for dynamic responses
 
 ## Development
 
@@ -49,12 +72,28 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 **Stubbing is Where the Magic Happens**:
 - You can stub different methods with different behaviors in the same test
-- Some returning values ()`when().thenReturn()`), others throwing exceptions (`when().thenThrow()`).
+- Some returning values (`when().thenReturn()`), others throwing exceptions (`when().thenThrow()`).
 
 **Verification Caught Real Issues**: Turns out `verify()` is pretty useful for catching when your code isn't doing what you think it's doing with dependencies.
 
 **Key Insight**: The triangle approach forces you to think about what your code should actually be doing with its dependencies, not just what it should return.
 
-Next up: probably diving into ArgumentCaptor and more advanced verification scenarios.
+---
+
+**Update: Intermediate Patterns** - After diving into the intermediate stuff, holy crap this is powerful:
+
+**@InjectMocks saves so much boilerplate** - no more manual constructor calls in every test. Just annotate and it injects everything automatically.
+
+**ArgumentCaptor is a game changer** - you can verify complex objects were passed correctly without writing custom matchers. Just capture and inspect.
+
+**Consecutive stubbing is powerful** - simulating state changes across multiple calls is surprisingly easy. First call returns X, second returns Y, etc.
+
+**InOrder verification catches subtle bugs** - ensures operations happen in the right sequence. Found this super useful for testing workflow logic.
+
+**@MockBean vs @Mock matters** - understanding when you need Spring context vs pure unit tests is crucial. @MockBean for integration, @Mock for unit tests. Different tools for different jobs.
+
+**Verification modes are essential** - `times()`, `never()`, `atLeast()` let you be specific about interactions. Way better than just "it was called."
+
+**Argument matchers make tests flexible** - `any()`, `argThat()` let your tests be flexible without being too loose. You can match patterns instead of exact values.
 
 
