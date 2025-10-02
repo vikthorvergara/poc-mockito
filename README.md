@@ -54,11 +54,11 @@ That's it. Simple POC for learning purposes.
 - Testing real service logic with mocked dependencies
 - Understanding when to use `@MockBean` vs `@Mock`
 
-### Level 3: Advanced (Coming Soon)
+### Level 3: Advanced
 - Spies and partial mocks
-- Static method mocking
-- Custom argument matchers
-- thenAnswer() for dynamic responses
+- Static method mocking **WIP**
+- Custom argument matchers **WIP**
+- thenAnswer() for dynamic responses **WIP**
 
 ## Development
 
@@ -96,4 +96,17 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 **Argument matchers make tests flexible** - `any()`, `argThat()` let your tests be flexible without being too loose. You can match patterns instead of exact values.
 
+---
+
+**Update: Advanced Patterns - Spies**:
+
+**Spies are the real deal when you need partial mocking**: sometimes you want to test a real object but stub just ONE method. That's where `spy()` shines.
+
+**Watch out though**: Spies work with real objects, so be careful with constructors that have side effects. And by testing real code, it's slower than jsut mocks.
+
+**Note**: Using `doReturn().when()` instead of `when().thenReturn()` with spies avoids calling the real method during stubbing.
+
+---
+
+**Update: More Advanced Patterns Coming**: WIP
 
