@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import org.mockito.MockedStatic;
 
 /**
  * LEVEL 3: ADVANCED TRIANGLE MASTERY
@@ -92,5 +93,24 @@ class AdvancedTriangleTest {
     // PILLAR 1: ADVANCED MOCK CREATION - STATIC MOCKING
     // =====================================================
 
-    // WIP
+    @Test
+    @DisplayName("Static Mocking - Mocking Static Methods With Try-With-Resources")
+    void demonstrateStaticMocking() {
+        // PILLAR 1: MOCK CREATION - Static Mocking of a utility class
+        LocalDateTime backThen = LocalDateTime.of(2008, 1, 20, 9, 41);
+        try (MockedStatic<LocalDateTime> mockedStatic = mockStatic(LocalDateTime.class)) {
+            // PILLAR 2: STUBBING - Stub the static method
+            mockedStatic.when(LocalDateTime::now).thenReturn(backThen);
+
+            // Execute - Create a user which uses LocalDateTime.now()
+            User user = new User("Gustavo Fring", "gus@pollos.com");
+
+            // Assert - The user's createdAt should use our fixed time
+            assertEquals(backThen, user.getCreatedAt());
+
+            // PILLAR 3: VERIFICATION - Verify static method was called
+            mockedStatic.verify(LocalDateTime::now);
+        }
+        // Static mock should be closed and cleaned by itself at this point
+    }
 }

@@ -56,7 +56,7 @@ That's it. Simple POC for learning purposes.
 
 ### Level 3: Advanced
 - Spies and partial mocks
-- Static method mocking **WIP**
+- Static method mocking with `mockStatic()` and try-with-resources
 - Custom argument matchers **WIP**
 - thenAnswer() for dynamic responses **WIP**
 
@@ -105,6 +105,12 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 **Watch out though**: Spies work with real objects, so be careful with constructors that have side effects. And by testing real code, it's slower than jsut mocks.
 
 **Note**: Using `doReturn().when()` instead of `when().thenReturn()` with spies avoids calling the real method during stubbing.
+
+---
+
+**Update: Advanced Patterns - Static Mocking**:
+
+**Static mocking with `mockStatic()` unlocks testing utility classes**: mock static methods like `LocalDateTime.now()` using try-with-resources to ensure proper cleanup.
 
 ---
 
