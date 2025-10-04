@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import org.mockito.MockedStatic;
 
@@ -112,5 +115,84 @@ class AdvancedTriangleTest {
             mockedStatic.verify(LocalDateTime::now);
         }
         // Static mock should be closed and cleaned by itself at this point
+    }
+
+    // =====================================================
+    // PILLAR 2: ADVANCED STUBBING - thenAnswer()
+    // =====================================================
+
+    @Test
+    @DisplayName("thenAnswer() - Dynamic Response Based on Input Parameters")
+    void demonstrateThenAnswerDynamicResponse() {
+        // PILLAR 2: STUBBING - Use thenAnswer for dynamic behavior
+        // The answer changes based on the input argument
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User inputUser = invocation.getArgument(0);
+            Long generatedId = 21L;
+            // Simulate ID auto-generation
+            inputUser.setId(generatedId);
+            inputUser.setCreatedAt(LocalDateTime.now());
+            return inputUser;
+        });
+
+        String userName = "Mike Ehrmantraut";
+        String userEmail = "mike@investigator.com";
+
+        // Execute
+        when(userRepository.findByEmail(userEmail)).thenReturn(List.of());
+
+        UserService userService = new UserService(userRepository);
+        User savedUser = userService.createUser(userName, userEmail);
+
+        // Assert - The ID was dynamically set by thenAnswer
+        assertNotNull(savedUser.getId());
+        assertEquals(999L, savedUser.getId());
+        assertEquals(userName, savedUser.getName());
+
+        // PILLAR 3: VERIFICATION
+        verify(userRepository).save(argThat(user ->
+            userName.equals(user.getName()) &&
+            userEmail.equals(user.getEmail())
+        ));
+    }
+
+    @Test
+    @DisplayName("thenAnswer() - Multiple Dynamic Behaviors in Same Test")
+    void demonstrateComplexThenAnswer() {
+        String userName = "Hank Schrader";
+        String userEmailDomain = "@dea.gov";
+
+        // PILLAR 2: Stubbing with conditional logic
+        when(userRepository.findById(anyLong())).thenAnswer(invocation -> {
+            Long id = invocation.getArgument(0);
+
+            // Different behavior based on ID value
+            if (id < 100) {
+                return Optional.of(new User(id, userName, "hank" + id + userEmailDomain, LocalDateTime.now()));
+            } else if (id == 999) {
+                return Optional.empty();
+            } else {
+                throw new IllegalArgumentException("Invalid ID range");
+            }
+        });
+
+        UserService userService = new UserService(userRepository);
+
+        // Execute multiple scenarios
+        Optional<User> user1 = userService.findUserById(1L);
+        Optional<User> user50 = userService.findUserById(50L);
+        Optional<User> user999 = userService.findUserById(999L);
+
+        // Assert different behaviors
+        assertTrue(user1.isPresent());
+        assertEquals(userName, user1.get().getName());
+
+        assertTrue(user50.isPresent());
+        assertEquals("hank50" + userEmailDomain, user50.get().getEmail());
+
+        assertFalse(user999.isPresent());
+
+        // PILLAR 3: Verification
+        verify(userRepository, times(3)).findById(anyLong());
     }
 }

@@ -80,7 +80,7 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
-**Update: Intermediate Patterns** - After diving into the intermediate stuff, holy crap this is powerful:
+**Intermediate Patterns** - After diving into the intermediate stuff, holy crap this is powerful:
 
 **@InjectMocks saves so much boilerplate** - no more manual constructor calls in every test. Just annotate and it injects everything automatically.
 
@@ -98,7 +98,7 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
-**Update: Advanced Patterns - Spies**:
+**Advanced Patterns - Spies**:
 
 **Spies are the real deal when you need partial mocking**: sometimes you want to test a real object but stub just ONE method. That's where `spy()` shines.
 
@@ -108,11 +108,15 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
-**Update: Advanced Patterns - Static Mocking**:
+**Advanced Patterns - Static Mocking**:
 
 **Static mocking with `mockStatic()` unlocks testing utility classes**: mock static methods like `LocalDateTime.now()` using try-with-resources to ensure proper cleanup.
 
+**Advanced Patterns - Dynamic Response**:
+
+**Dyanmic response with `thenAnswer()`**: lets you run code when the mock is called. Grabbing the input arguments, you can even use conditionals to return different things based on what was passed in.
+
 ---
 
-**Update: More Advanced Patterns Coming**: WIP
+**More Advanced Patterns Coming**: WIP
 
