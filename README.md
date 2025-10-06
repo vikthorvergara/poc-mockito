@@ -118,5 +118,15 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
+**Advanced Patterns - Custom Argument Matchers**:
+
+**Custom matchers let you write domain-specific validation logic**: instead of just using `any()` or `eq()`, you can define `ArgumentMatcher<T>` with lambda expressions to match based on business rules (like email validation, string patterns, or complex object conditions).
+
+**Combining matchers makes verification incredibly precise**: you can use `argThat()` with lambda logic to verify that saved objects meet multiple criteria simultaneously - checking name equality, email format, and domain all in one verification.
+
+**Key insight**: Custom matchers bridge the gap between too-loose (`any()`) and too-strict (`eq()`) - you verify what actually matters for your business logic, not just exact object equality.
+
+---
+
 **More Advanced Patterns Coming**: WIP
 
