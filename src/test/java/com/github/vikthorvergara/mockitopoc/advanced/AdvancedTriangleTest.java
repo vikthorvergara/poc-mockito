@@ -6,6 +6,7 @@ import com.github.vikthorvergara.mockitopoc.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -194,5 +195,57 @@ class AdvancedTriangleTest {
 
         // PILLAR 3: Verification
         verify(userRepository, times(3)).findById(anyLong());
+    }
+
+    // =====================================================
+    // PILLAR 2: ADVANCED STUBBING - CUSTOM ARGUMENT MATCHERS
+    // =====================================================
+
+    @Test
+    @DisplayName("Custom Argument Matchers - Domain-Specific Matching")
+    void demonstrateCustomArgumentMatchers() {
+        // Define a custom matcher for email validation
+        ArgumentMatcher<User> hasValidEmail = user ->
+            user.getEmail() != null && user.getEmail().contains("@") && user.getEmail().contains(".");
+
+        // PILLAR 2: Stub with custom matcher
+        when(userRepository.save(argThat(hasValidEmail)))
+            .thenAnswer(inv -> {
+                User u = inv.getArgument(0);
+                u.setId(100L);
+                return u;
+            });
+
+        // Execute with valid email
+        User validUser = new User("Skyler White", "skyler@white.com");
+        when(userRepository.findByEmail(validUser.getEmail())).thenReturn(List.of());
+
+        UserService userService = new UserService(userRepository);
+        User saved = userService.createUser(validUser.getName(), validUser.getEmail());
+
+        // Assert
+        assertEquals(100L, saved.getId());
+
+        // PILLAR 3: Verify with custom matcher
+        verify(userRepository).save(argThat(hasValidEmail));
+    }
+
+    @Test
+    @DisplayName("Argument Matchers - Combining Multiple Matchers")
+    void demonstrateComplexArgumentMatching() {
+        User user = new User("Hector Salamanca", "hector@salamanca.com");
+
+        // PILLAR 2: Combine eq() and any() matchers
+        when(userRepository.save(any(User.class)))
+                .thenReturn(new User(1L, user.getName(), user.getEmail(), LocalDateTime.now()));
+
+        userRepository.save(user);
+
+        // PILLAR 3: Verify with complex matcher logic
+        verify(userRepository).save(argThat(u ->
+            u.getName().equals("Hector Salamanca") &&
+            u.getEmail().startsWith("hector@") &&
+            u.getEmail().endsWith(".com")
+        ));
     }
 }
