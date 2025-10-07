@@ -128,5 +128,15 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
+**Advanced Patterns - Complex Verification**:
+
+**InOrder verification across multiple mocks**: `inOrder(mock1, mock2)` lets you verify the exact sequence of method calls across different mock objects - critical for testing workflows where operation order matters (like distributed transactions or multi-step processes).
+
+**Advanced verification modes unlock precise interaction testing**: combining `times(n)`, `atLeast(n)`, `atMost(n)`, and `never()` in a single test lets you verify complex interaction patterns - ensuring methods are called the right number of times without being overly strict or too loose.
+
+**Key insight**: Advanced verification modes help you specify "how many times" matters - whether it's exactly 3 times, at least 2 times, or never at all. This precision catches subtle bugs in loop logic, retry mechanisms, and conditional flows.
+
+---
+
 **More Advanced Patterns Coming**: WIP
 

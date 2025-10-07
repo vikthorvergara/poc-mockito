@@ -248,4 +248,51 @@ class AdvancedTriangleTest {
             u.getEmail().endsWith(".com")
         ));
     }
+
+    // =====================================================
+    // PILLAR 3: ADVANCED VERIFICATION - COMPLEX PATTERNS
+    // =====================================================
+
+    @Test
+    @DisplayName("Complex Verification - InOrder with Multiple Mocks")
+    void demonstrateComplexInOrderVerification() {
+        // PILLAR 1: Create additional mocks for complex scenario
+        UserRepository repo1 = mock(UserRepository.class);
+        UserRepository repo2 = mock(UserRepository.class);
+
+        // PILLAR 2: Stub both repositories
+        when(repo1.findById(1L)).thenReturn(Optional.of(new User(1L, "Tuco Salamanca", "tuco@cartel.mx", LocalDateTime.now())));
+        when(repo2.findById(2L)).thenReturn(Optional.of(new User(2L, "Gale Boetticher", "gale@chemist.edu", LocalDateTime.now())));
+
+        // Execute in specific order
+        repo1.findById(1L);
+        repo2.findById(2L);
+        repo1.findById(1L); // Call repo1 again
+
+        // PILLAR 3: Verify complex interaction order
+        var inOrder = inOrder(repo1, repo2);
+        inOrder.verify(repo1).findById(1L);
+        inOrder.verify(repo2).findById(2L);
+        inOrder.verify(repo1).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Verification Modes - Advanced Patterns")
+    void demonstrateAdvancedVerificationModes() {
+        // PILLAR 2: Stub repository
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        UserService userService = new UserService(userRepository);
+
+        // Execute multiple calls
+        userService.findUserById(1L);
+        userService.findUserById(2L);
+        userService.findUserById(3L);
+
+        // PILLAR 3: Advanced verification modes
+        verify(userRepository, times(3)).findById(anyLong());
+        verify(userRepository, atLeast(2)).findById(anyLong());
+        verify(userRepository, atMost(5)).findById(anyLong());
+        verify(userRepository, never()).findAll();
+    }
 }
