@@ -138,5 +138,11 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
+**Advanced Patterns - Time Patterns**:
+
+**Timeout verification**: timeout() waits for async operations to complete before verifying (useful for multi-threaded code), and you can combine it with times() to verify multiple async calls happened within a time window
+
+---
+
 **More Advanced Patterns Coming**: WIP
 
