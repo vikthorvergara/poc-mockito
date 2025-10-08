@@ -54,11 +54,11 @@ That's it. Simple POC for learning purposes.
 - Testing real service logic with mocked dependencies
 - Understanding when to use `@MockBean` vs `@Mock`
 
-### Level 3: Advanced (Coming Soon)
+### Level 3: Advanced
 - Spies and partial mocks
-- Static method mocking
-- Custom argument matchers
-- thenAnswer() for dynamic responses
+- Static method mocking with `mockStatic()` and try-with-resources
+- Custom argument matchers **WIP**
+- thenAnswer() for dynamic responses **WIP**
 
 ## Development
 
@@ -80,7 +80,7 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
-**Update: Intermediate Patterns** - After diving into the intermediate stuff, holy crap this is powerful:
+**Intermediate Patterns** - After diving into the intermediate stuff, holy crap this is powerful:
 
 **@InjectMocks saves so much boilerplate** - no more manual constructor calls in every test. Just annotate and it injects everything automatically.
 
@@ -96,4 +96,53 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 **Argument matchers make tests flexible** - `any()`, `argThat()` let your tests be flexible without being too loose. You can match patterns instead of exact values.
 
+---
+
+**Advanced Patterns - Spies**:
+
+**Spies are the real deal when you need partial mocking**: sometimes you want to test a real object but stub just ONE method. That's where `spy()` shines.
+
+**Watch out though**: Spies work with real objects, so be careful with constructors that have side effects. And by testing real code, it's slower than jsut mocks.
+
+**Note**: Using `doReturn().when()` instead of `when().thenReturn()` with spies avoids calling the real method during stubbing.
+
+---
+
+**Advanced Patterns - Static Mocking**:
+
+**Static mocking with `mockStatic()` unlocks testing utility classes**: mock static methods like `LocalDateTime.now()` using try-with-resources to ensure proper cleanup.
+
+**Advanced Patterns - Dynamic Response**:
+
+**Dyanmic response with `thenAnswer()`**: lets you run code when the mock is called. Grabbing the input arguments, you can even use conditionals to return different things based on what was passed in.
+
+---
+
+**Advanced Patterns - Custom Argument Matchers**:
+
+**Custom matchers let you write domain-specific validation logic**: instead of just using `any()` or `eq()`, you can define `ArgumentMatcher<T>` with lambda expressions to match based on business rules (like email validation, string patterns, or complex object conditions).
+
+**Combining matchers makes verification incredibly precise**: you can use `argThat()` with lambda logic to verify that saved objects meet multiple criteria simultaneously - checking name equality, email format, and domain all in one verification.
+
+**Key insight**: Custom matchers bridge the gap between too-loose (`any()`) and too-strict (`eq()`) - you verify what actually matters for your business logic, not just exact object equality.
+
+---
+
+**Advanced Patterns - Complex Verification**:
+
+**InOrder verification across multiple mocks**: `inOrder(mock1, mock2)` lets you verify the exact sequence of method calls across different mock objects - critical for testing workflows where operation order matters (like distributed transactions or multi-step processes).
+
+**Advanced verification modes unlock precise interaction testing**: combining `times(n)`, `atLeast(n)`, `atMost(n)`, and `never()` in a single test lets you verify complex interaction patterns - ensuring methods are called the right number of times without being overly strict or too loose.
+
+**Key insight**: Advanced verification modes help you specify "how many times" matters - whether it's exactly 3 times, at least 2 times, or never at all. This precision catches subtle bugs in loop logic, retry mechanisms, and conditional flows.
+
+---
+
+**Advanced Patterns - Time Patterns**:
+
+**Timeout verification**: timeout() waits for async operations to complete before verifying (useful for multi-threaded code), and you can combine it with times() to verify multiple async calls happened within a time window
+
+---
+
+**More Advanced Patterns Coming**: WIP
 
