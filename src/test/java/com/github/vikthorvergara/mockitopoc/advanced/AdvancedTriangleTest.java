@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -294,5 +295,55 @@ class AdvancedTriangleTest {
         verify(userRepository, atLeast(2)).findById(anyLong());
         verify(userRepository, atMost(5)).findById(anyLong());
         verify(userRepository, never()).findAll();
+    }
+        
+    // =====================================================
+    // PILLAR 3: ADVANCED VERIFICATION - TIMEOUT PATTERNS
+    // =====================================================
+
+    @Test
+    @DisplayName("Timeout Verification - Async Operations")
+    void demonstrateTimeoutVerification() throws Exception {
+        // PILLAR 2: Stub for async scenario
+        when(userRepository.findById(1L))
+            .thenReturn(Optional.of(new User(1L, "Lydia Rodarte-Quayle", "lydia@madrigal.com", LocalDateTime.now())));
+
+        UserService userService = new UserService(userRepository);
+
+        // Execute asynchronously
+        CompletableFuture<Optional<User>> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(100); // Simulate delay
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return userService.findUserById(1L);
+        });
+
+        // Wait for completion
+        Optional<User> result = future.get();
+        assertTrue(result.isPresent());
+
+        // PILLAR 3: Verify with timeout (waits up to 500ms for interaction)
+        verify(userRepository, timeout(500)).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Timeout Verification - With Times and Timeout Combined")
+    void demonstrateTimeoutWithTimes() throws Exception {
+        // PILLAR 2: Stub
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        UserService userService = new UserService(userRepository);
+
+        // Execute multiple async calls
+        CompletableFuture<Void> future1 = CompletableFuture.runAsync(() -> userService.findUserById(1L));
+        CompletableFuture<Void> future2 = CompletableFuture.runAsync(() -> userService.findUserById(2L));
+
+        future1.get();
+        future2.get();
+
+        // PILLAR 3: Verify with both timeout and times
+        verify(userRepository, timeout(500).times(2)).findById(anyLong());
     }
 }
