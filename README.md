@@ -138,11 +138,16 @@ So I went through building the `MockitoTriangleTest` and honestly, it was way mo
 
 ---
 
-**Advanced Patterns - Time Patterns**:
+**Advanced Patterns - Timeout Patterns**:
 
 **Timeout verification**: timeout() waits for async operations to complete before verifying (useful for multi-threaded code), and you can combine it with times() to verify multiple async calls happened within a time window
 
 ---
 
-**More Advanced Patterns Coming**: WIP
+**Advanced Patterns - Putting It All Together**:
 
+**Complete advanced triangle shows how all pillars work together**: combining spies (partial mocking), thenAnswer() (dynamic stubbing), and custom matchers (precise verification) in one test demonstrates real-world complexity - creating users, handling duplicates, verifying exact interactions.
+
+**Dynamic exception handling with thenAnswer() lets you simulate real validation**: you can throw different exceptions based on input validation logic, making your test mocks behave like real dependencies - validating nulls, length constraints, and business rules all in the stubbing layer.
+
+**Key insight**: Advanced patterns aren't just features - they're tools for testing complex real-world scenarios where simple stubs and verifications aren't enough. When your production code has conditional logic, state changes, and async operations, these patterns let your tests mirror that complexity.

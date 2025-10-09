@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import org.mockito.MockedStatic;
@@ -345,5 +346,96 @@ class AdvancedTriangleTest {
 
         // PILLAR 3: Verify with both timeout and times
         verify(userRepository, timeout(500).times(2)).findById(anyLong());
+    }
+
+    // =====================================================
+    // INTEGRATION: COMPLETE ADVANCED TRIANGLE
+    // =====================================================
+
+    @Test
+    @DisplayName("Complete Advanced Triangle - All Pillars in Complex Scenario")
+    void demonstrateCompleteAdvancedTriangle() {
+        // PILLAR 1: MOCK CREATION - Spy for partial mocking
+        UserService realService = new UserService(userRepository);
+        UserService spyService = spy(realService);
+
+        // PILLAR 2: STUBBING - Dynamic response with thenAnswer
+        when(userRepository.findByEmail(anyString())).thenAnswer(invocation -> {
+            String email = invocation.getArgument(0);
+            if (email.contains("existing")) {
+                return List.of(new User(1L, "Jesse Pinkman", email, LocalDateTime.now()));
+            }
+            return List.of();
+        });
+
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setId(999L);
+            return user;
+        });
+
+        // Execute - New user creation
+        User newUser = spyService.createUser("Jane Margolis", "jane@artist.com");
+
+        // Assert
+        assertNotNull(newUser);
+        assertEquals(999L, newUser.getId());
+        assertEquals("Jane Margolis", newUser.getName());
+
+        // Execute - Try to create existing user
+        assertThrows(IllegalArgumentException.class, () ->
+            spyService.createUser("Jesse Pinkman", "capncook@yahoo.com")
+        );
+
+        // PILLAR 3: VERIFICATION - Complex verification with custom matchers
+        verify(userRepository, times(2)).findByEmail(anyString());
+        verify(userRepository).findByEmail("jane@artist.com");
+        verify(userRepository).findByEmail("capncook@yahoo.com");
+
+        verify(userRepository).save(argThat(user ->
+            user.getName().equals("Jane Margolis") &&
+            user.getEmail().equals("jane@artist.com")
+        ));
+
+        // Verify the spy's real method was called
+        verify(spyService, times(2)).createUser(anyString(), anyString());
+    }
+
+    // =====================================================
+    // ERROR SCENARIOS & EXCEPTION HANDLING
+    // =====================================================
+
+    @Test
+    @DisplayName("Exception Handling - Complex Error Scenarios with thenAnswer")
+    void demonstrateComplexExceptionHandling() {
+        // PILLAR 2: Dynamic exception throwing based on input
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            if (user.getName() == null) {
+                throw new IllegalArgumentException("Name cannot be null in repository");
+            }
+            if (user.getEmail() != null && user.getEmail().length() > 100) {
+                throw new IllegalStateException("Email too long for database");
+            }
+            user.setId(1L);
+            return user;
+        });
+
+        when(userRepository.findByEmail(anyString())).thenReturn(List.of());
+
+        UserService userService = new UserService(userRepository);
+
+        // Test different error scenarios
+        assertThrows(IllegalArgumentException.class, () ->
+            userService.createUser("", "existing@vamonos.com")
+        );
+
+        assertThrows(IllegalArgumentException.class, () ->
+            userService.createUser("Todd Alquist", "")
+        );
+
+        // PILLAR 3: Verify interactions even when exceptions occurred
+        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, times(2)).findByEmail(anyString());
     }
 }
